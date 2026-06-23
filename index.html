@@ -136,10 +136,31 @@
 
   .card-body {
     display: none;
-    padding: 0 16px 16px;
     border-top: 1px solid #2e2e2e;
   }
   .exercise-card.open .card-body { display: block; }
+
+  .exercise-image-wrap {
+    background: #1e1e1e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 180px;
+    overflow: hidden;
+  }
+
+  .exercise-image-wrap img {
+    width: 100%;
+    max-height: 240px;
+    object-fit: contain;
+    display: block;
+  }
+
+  .exercise-image-wrap.hidden { display: none; }
+
+  .card-body-inner {
+    padding: 0 16px 16px;
+  }
 
   .section-label {
     font-size: 11px;
@@ -211,11 +232,14 @@
 <div class="exercise-list" id="list"></div>
 
 <script>
+const BASE = "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/";
+
 const exercises = [
   {
     name: "Front Squat (Dumbbell)",
     days: [1],
     sets: "3 sets · 10 reps",
+    images: ["Front_Dumbbell_Squat/0.jpg", "Front_Dumbbell_Squat/1.jpg"],
     muscles: ["Quads", "Glutes", "Core", "Upper Back"],
     steps: [
       "Hold a dumbbell in each hand and bring them up to shoulder height, resting on the front of your shoulders with palms facing in.",
@@ -236,6 +260,7 @@ const exercises = [
     name: "Stiff Leg Deadlift (Dumbbell)",
     days: [1, 3],
     sets: "3 sets · 10 reps",
+    images: ["Stiff-Legged_Dumbbell_Deadlift/0.jpg", "Stiff-Legged_Dumbbell_Deadlift/1.jpg"],
     muscles: ["Hamstrings", "Glutes", "Lower Back"],
     steps: [
       "Stand holding dumbbells in front of your thighs, palms facing your body.",
@@ -255,6 +280,7 @@ const exercises = [
     name: "One Arm Bent Over Row",
     days: [1],
     sets: "3 sets · 10 reps",
+    images: ["One-Arm_Dumbbell_Row/0.jpg", "One-Arm_Dumbbell_Row/1.jpg"],
     muscles: ["Lats", "Rhomboids", "Rear Delt", "Biceps"],
     steps: [
       "Place your left hand and left knee on a bench for support, body parallel to the floor.",
@@ -274,6 +300,7 @@ const exercises = [
     name: "Bench Press (Close Grip)",
     days: [1, 3],
     sets: "3 sets · 10 reps",
+    images: ["Bench_Press_-_Close_Grip/0.jpg", "Bench_Press_-_Close_Grip/1.jpg"],
     muscles: ["Triceps", "Chest", "Front Delt"],
     steps: [
       "Lie on a bench holding dumbbells (or barbell) with a shoulder-width or narrower grip.",
@@ -292,6 +319,7 @@ const exercises = [
     name: "Lateral Raise (Dumbbell)",
     days: [1],
     sets: "3 sets · 10 reps",
+    images: ["Side_Lateral_Raise/0.jpg", "Side_Lateral_Raise/1.jpg"],
     muscles: ["Side Delts", "Traps"],
     steps: [
       "Stand holding a dumbbell in each hand by your sides, palms facing in.",
@@ -310,6 +338,7 @@ const exercises = [
     name: "Bicep Curl (Dumbbell)",
     days: [1],
     sets: "3 sets · 10 reps",
+    images: ["Dumbbell_Alternate_Bicep_Curl/0.jpg", "Dumbbell_Alternate_Bicep_Curl/1.jpg"],
     muscles: ["Biceps", "Forearms"],
     steps: [
       "Stand holding a dumbbell in each hand, arms fully extended, palms facing forward.",
@@ -328,6 +357,7 @@ const exercises = [
     name: "Tricep Extension (Dumbbell)",
     days: [1],
     sets: "3 sets · 10 reps",
+    images: ["Dumbbell_Tricep_Extension/0.jpg", "Dumbbell_Tricep_Extension/1.jpg"],
     muscles: ["Triceps"],
     steps: [
       "Stand or sit holding one dumbbell with both hands, cupped under the top plate.",
@@ -346,6 +376,7 @@ const exercises = [
     name: "Lunge (Dumbbell)",
     days: [2],
     sets: "3 sets · 10 reps",
+    images: ["Dumbbell_Lunges/0.jpg", "Dumbbell_Lunges/1.jpg"],
     muscles: ["Quads", "Glutes", "Hamstrings", "Core"],
     steps: [
       "Stand upright holding a dumbbell in each hand by your sides.",
@@ -365,6 +396,7 @@ const exercises = [
     name: "Good Morning",
     days: [2],
     sets: "3 sets · 10 reps",
+    images: ["Good_Morning/0.jpg", "Good_Morning/1.jpg"],
     muscles: ["Hamstrings", "Glutes", "Lower Back", "Core"],
     steps: [
       "Stand with feet shoulder-width apart. Rest a barbell across your upper traps, or hold dumbbells at your sides / clasped behind your head.",
@@ -384,6 +416,7 @@ const exercises = [
     name: "Deadlift (Dumbbell)",
     days: [2],
     sets: "3 sets · 10 reps",
+    images: ["Dumbbell_Deadlift/0.jpg", "Dumbbell_Deadlift/1.jpg"],
     muscles: ["Hamstrings", "Glutes", "Lower Back", "Traps", "Core"],
     steps: [
       "Stand with feet hip-width apart, a dumbbell on either side of your feet.",
@@ -404,6 +437,7 @@ const exercises = [
     name: "Military Press (Dumbbell)",
     days: [2],
     sets: "3 sets · 10 reps",
+    images: ["Dumbbell_Shoulder_Press/0.jpg", "Dumbbell_Shoulder_Press/1.jpg"],
     muscles: ["Front Delt", "Side Delt", "Triceps", "Traps"],
     steps: [
       "Stand (or sit) holding dumbbells at shoulder height, palms facing forward, elbows below your wrists.",
@@ -422,6 +456,7 @@ const exercises = [
     name: "Pec Fly (Dumbbell)",
     days: [2],
     sets: "3 sets · 10 reps",
+    images: ["Dumbbell_Flyes/0.jpg", "Dumbbell_Flyes/1.jpg"],
     muscles: ["Chest", "Front Delt"],
     steps: [
       "Lie flat on a bench holding a dumbbell in each hand above your chest, palms facing each other.",
@@ -440,6 +475,7 @@ const exercises = [
     name: "Hammer Curl",
     days: [2],
     sets: "3 sets · 10 reps",
+    images: ["Hammer_Curls/0.jpg", "Hammer_Curls/1.jpg"],
     muscles: ["Biceps", "Brachialis", "Forearms"],
     steps: [
       "Stand holding a dumbbell in each hand with a neutral grip — palms facing each other.",
@@ -458,6 +494,7 @@ const exercises = [
     name: "Overhead Extension (Dumbbell)",
     days: [2],
     sets: "3 sets · 10 reps",
+    images: ["Dumbbell_Seated_Triceps_Extension/0.jpg", "Dumbbell_Seated_Triceps_Extension/1.jpg"],
     muscles: ["Triceps"],
     steps: [
       "Stand or sit holding one dumbbell with both hands, gripping under the top plate.",
@@ -476,6 +513,7 @@ const exercises = [
     name: "Hip Thrust (Dumbbell)",
     days: [3],
     sets: "3 sets · 10 reps",
+    images: ["Barbell_Hip_Thrust/0.jpg", "Barbell_Hip_Thrust/1.jpg"],
     muscles: ["Glutes", "Hamstrings", "Core"],
     steps: [
       "Sit on the floor with your upper back against a bench, knees bent, feet flat on the floor.",
@@ -495,6 +533,7 @@ const exercises = [
     name: "Dumbbell Row",
     days: [3],
     sets: "3 sets · 10 reps",
+    images: ["Bent_Over_Two-Dumbbell_Row/0.jpg", "Bent_Over_Two-Dumbbell_Row/1.jpg"],
     muscles: ["Lats", "Rhomboids", "Rear Delt", "Biceps"],
     steps: [
       "Hold a dumbbell in each hand and hinge at the hips until your torso is roughly parallel to the floor.",
@@ -513,6 +552,7 @@ const exercises = [
     name: "Neutral Grip Dumbbell Bench Press",
     days: [3],
     sets: "3 sets · 10 reps",
+    images: ["Neutral_Grip_Dumbbell_Bench_Press/0.jpg", "Neutral_Grip_Dumbbell_Bench_Press/1.jpg"],
     muscles: ["Chest", "Triceps", "Front Delt"],
     steps: [
       "Lie flat on a bench holding a dumbbell in each hand, palms facing each other (neutral grip).",
@@ -531,6 +571,7 @@ const exercises = [
     name: "Rear Delt Fly (Dumbbell)",
     days: [3],
     sets: "3 sets · 10 reps",
+    images: ["Bent_Over_Dumbbell_Rear_Lateral_Raise/0.jpg", "Bent_Over_Dumbbell_Rear_Lateral_Raise/1.jpg"],
     muscles: ["Rear Delt", "Rhomboids", "Traps"],
     steps: [
       "Sit at the end of a bench and hinge forward until your chest is near your thighs, or stand bent over.",
@@ -549,6 +590,7 @@ const exercises = [
     name: "Zottman Curl",
     days: [3],
     sets: "3 sets · 10 reps",
+    images: ["Zottman_Curl/0.jpg", "Zottman_Curl/1.jpg"],
     muscles: ["Biceps", "Brachialis", "Forearms"],
     steps: [
       "Stand holding dumbbells at your sides with palms facing forward (supinated).",
@@ -568,6 +610,25 @@ const exercises = [
 let activeDay = "all";
 let query = "";
 
+function imgHtml(images) {
+  if (!images || images.length === 0) return '';
+  // Show first image by default; tap to toggle to second
+  const src0 = BASE + images[0];
+  const src1 = images[1] ? BASE + images[1] : null;
+  return `
+    <div class="exercise-image-wrap" id="imgwrap-CARDID">
+      <img
+        src="${src0}"
+        data-src0="${src0}"
+        data-src1="${src1 || src0}"
+        data-state="0"
+        onclick="toggleImg(this); event.stopPropagation();"
+        onerror="this.closest('.exercise-image-wrap').classList.add('hidden')"
+        alt="Exercise demonstration"
+      >
+    </div>`;
+}
+
 function render() {
   const list = document.getElementById("list");
   const q = query.toLowerCase().trim();
@@ -583,7 +644,9 @@ function render() {
     return;
   }
 
-  list.innerHTML = filtered.map((e, i) => `
+  list.innerHTML = filtered.map((e, i) => {
+    const imgBlock = imgHtml(e.images).replace('CARDID', i);
+    return `
     <div class="exercise-card" id="card-${i}" onclick="toggle(${i})">
       <div class="card-header">
         <div class="card-left">
@@ -596,20 +659,29 @@ function render() {
         <span class="chevron">&#8964;</span>
       </div>
       <div class="card-body">
-        <div class="section-label">How to do it</div>
-        <div class="steps"><ol>${e.steps.map(s => `<li>${s}</li>`).join('')}</ol></div>
-        <div class="section-label">Muscles</div>
-        <div class="muscles">${e.muscles.map(m => `<span class="muscle-tag">${m}</span>`).join('')}</div>
-        <div class="section-label">Form tips</div>
-        <div class="tips"><ul>${e.tips.map(t => `<li>${t}</li>`).join('')}</ul></div>
+        ${imgBlock}
+        <div class="card-body-inner">
+          <div class="section-label">How to do it</div>
+          <div class="steps"><ol>${e.steps.map(s => `<li>${s}</li>`).join('')}</ol></div>
+          <div class="section-label">Muscles</div>
+          <div class="muscles">${e.muscles.map(m => `<span class="muscle-tag">${m}</span>`).join('')}</div>
+          <div class="section-label">Form tips</div>
+          <div class="tips"><ul>${e.tips.map(t => `<li>${t}</li>`).join('')}</ul></div>
+        </div>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 function toggle(i) {
   const card = document.getElementById(`card-${i}`);
   card.classList.toggle('open');
+}
+
+function toggleImg(img) {
+  const state = img.dataset.state === "0" ? "1" : "0";
+  img.src = state === "0" ? img.dataset.src0 : img.dataset.src1;
+  img.dataset.state = state;
 }
 
 document.querySelectorAll('.day-btn').forEach(btn => {
