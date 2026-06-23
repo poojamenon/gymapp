@@ -8,25 +8,25 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    background: #1a1a1a;
-    color: #fff;
+    background: #f4f4f4;
+    color: #111;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     min-height: 100vh;
   }
 
   header {
-    background: #111;
+    background: #fff;
     padding: 16px 20px;
     position: sticky;
     top: 0;
     z-index: 100;
-    border-bottom: 1px solid #2a2a2a;
+    border-bottom: 1px solid #e0e0e0;
   }
 
   header h1 {
     font-size: 20px;
     font-weight: 700;
-    color: #fff;
+    color: #111;
   }
 
   .search-wrap {
@@ -35,16 +35,16 @@
 
   .search-wrap input {
     width: 100%;
-    background: #2a2a2a;
-    border: none;
+    background: #fff;
+    border: 1px solid #ddd;
     border-radius: 10px;
     padding: 12px 16px;
-    color: #fff;
+    color: #111;
     font-size: 16px;
     outline: none;
   }
 
-  .search-wrap input::placeholder { color: #666; }
+  .search-wrap input::placeholder { color: #aaa; }
 
   .day-filter {
     display: flex;
@@ -56,11 +56,11 @@
   .day-filter::-webkit-scrollbar { display: none; }
 
   .day-btn {
-    background: #2a2a2a;
-    border: none;
+    background: #fff;
+    border: 1px solid #ddd;
     border-radius: 20px;
     padding: 8px 16px;
-    color: #aaa;
+    color: #666;
     font-size: 14px;
     font-weight: 600;
     white-space: nowrap;
@@ -68,8 +68,9 @@
     transition: background 0.2s, color 0.2s;
   }
   .day-btn.active {
-    background: #f5c518;
-    color: #111;
+    background: #e8a000;
+    border-color: #e8a000;
+    color: #fff;
   }
 
   .exercise-list {
@@ -77,16 +78,17 @@
   }
 
   .exercise-card {
-    background: #242424;
+    background: #fff;
     border-radius: 14px;
     margin-bottom: 12px;
     overflow: hidden;
     cursor: pointer;
-    border: 1px solid #2e2e2e;
-    transition: border-color 0.2s;
+    border: 1px solid #e0e0e0;
+    transition: border-color 0.2s, box-shadow 0.2s;
   }
   .exercise-card.open {
-    border-color: #f5c518;
+    border-color: #e8a000;
+    box-shadow: 0 2px 12px rgba(232,160,0,0.15);
   }
 
   .card-header {
@@ -101,7 +103,7 @@
   .card-name {
     font-size: 16px;
     font-weight: 700;
-    color: #f5c518;
+    color: #c27f00;
     margin-bottom: 4px;
   }
 
@@ -117,31 +119,31 @@
   }
 
   .day-tag {
-    background: #333;
+    background: #f0f0f0;
     border-radius: 4px;
     padding: 2px 7px;
     font-size: 11px;
     font-weight: 600;
-    color: #aaa;
+    color: #666;
   }
 
   .chevron {
     font-size: 20px;
-    color: #666;
+    color: #bbb;
     transition: transform 0.25s;
     margin-left: 12px;
     flex-shrink: 0;
   }
-  .exercise-card.open .chevron { transform: rotate(180deg); color: #f5c518; }
+  .exercise-card.open .chevron { transform: rotate(180deg); color: #e8a000; }
 
   .card-body {
     display: none;
-    border-top: 1px solid #2e2e2e;
+    border-top: 1px solid #f0f0f0;
   }
   .exercise-card.open .card-body { display: block; }
 
   .exercise-image-wrap {
-    background: #1e1e1e;
+    background: #f8f8f8;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -165,7 +167,7 @@
   .section-label {
     font-size: 11px;
     font-weight: 700;
-    color: #f5c518;
+    color: #e8a000;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     margin: 14px 0 8px;
@@ -176,7 +178,7 @@
   }
   .steps li {
     font-size: 14px;
-    color: #ccc;
+    color: #333;
     line-height: 1.6;
     margin-bottom: 6px;
   }
@@ -186,7 +188,7 @@
   }
   .tips li {
     font-size: 13px;
-    color: #aaa;
+    color: #555;
     line-height: 1.5;
     margin-bottom: 4px;
   }
@@ -197,16 +199,16 @@
     gap: 6px;
   }
   .muscle-tag {
-    background: #333;
+    background: #f0f0f0;
     border-radius: 6px;
     padding: 4px 10px;
     font-size: 12px;
-    color: #ccc;
+    color: #444;
   }
 
   .no-results {
     text-align: center;
-    color: #555;
+    color: #aaa;
     font-size: 15px;
     padding: 60px 20px;
   }
