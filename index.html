@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Gym Exercise Guide</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #1a1a1a;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+  }
+
+  header {
+    background: #111;
+    padding: 16px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid #2a2a2a;
+  }
+
+  header h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .search-wrap {
+    padding: 16px 20px 8px;
+  }
+
+  .search-wrap input {
+    width: 100%;
+    background: #2a2a2a;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: #fff;
+    font-size: 16px;
+    outline: none;
+  }
+
+  .search-wrap input::placeholder { color: #666; }
+
+  .day-filter {
+    display: flex;
+    gap: 8px;
+    padding: 8px 20px 16px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .day-filter::-webkit-scrollbar { display: none; }
+
+  .day-btn {
+    background: #2a2a2a;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    color: #aaa;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+  .day-btn.active {
+    background: #f5c518;
+    color: #111;
+  }
+
+  .exercise-list {
+    padding: 0 20px 100px;
+  }
+
+  .exercise-card {
+    background: #242424;
+    border-radius: 14px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px solid #2e2e2e;
+    transition: border-color 0.2s;
+  }
+  .exercise-card.open {
+    border-color: #f5c518;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+  }
+
+  .card-left { flex: 1; }
+
+  .card-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #f5c518;
+    margin-bottom: 4px;
+  }
+
+  .card-meta {
+    font-size: 13px;
+    color: #888;
+  }
+
+  .card-days {
+    display: flex;
+    gap: 4px;
+    margin-top: 6px;
+  }
+
+  .day-tag {
+    background: #333;
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #aaa;
+  }
+
+  .chevron {
+    font-size: 20px;
+    color: #666;
+    transition: transform 0.25s;
+    margin-left: 12px;
+    flex-shrink: 0;
+  }
+  .exercise-card.open .chevron { transform: rotate(180deg); color: #f5c518; }
+
+  .card-body {
+    display: none;
+    padding: 0 16px 16px;
+    border-top: 1px solid #2e2e2e;
+  }
+  .exercise-card.open .card-body { display: block; }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #f5c518;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 14px 0 8px;
+  }
+
+  .steps ol {
+    padding-left: 20px;
+  }
+  .steps li {
+    font-size: 14px;
+    color: #ccc;
+    line-height: 1.6;
+    margin-bottom: 6px;
+  }
+
+  .tips ul {
+    padding-left: 20px;
+  }
+  .tips li {
+    font-size: 13px;
+    color: #aaa;
+    line-height: 1.5;
+    margin-bottom: 4px;
+  }
+
+  .muscles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .muscle-tag {
+    background: #333;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 12px;
+    color: #ccc;
+  }
+
+  .no-results {
+    text-align: center;
+    color: #555;
+    font-size: 15px;
+    padding: 60px 20px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Exercise Guide</h1>
+</header>
+
+<div class="search-wrap">
+  <input type="search" id="search" placeholder="Search exercises..." autocomplete="off">
+</div>
+
+<div class="day-filter">
+  <button class="day-btn active" data-day="all">All</button>
+  <button class="day-btn" data-day="1">Day 1</button>
+  <button class="day-btn" data-day="2">Day 2</button>
+  <button class="day-btn" data-day="3">Day 3</button>
+</div>
+
+<div class="exercise-list" id="list"></div>
+
+<script>
+const exercises = [
+  {
+    name: "Front Squat (Dumbbell)",
+    days: [1],
+    sets: "3 sets · 10 reps",
+    muscles: ["Quads", "Glutes", "Core", "Upper Back"],
+    steps: [
+      "Hold a dumbbell in each hand and bring them up to shoulder height, resting on the front of your shoulders with palms facing in.",
+      "Stand with feet shoulder-width apart, toes slightly turned out.",
+      "Brace your core and keep your chest tall and elbows high.",
+      "Bend at the knees and hips simultaneously, sitting down and back as if into a chair.",
+      "Lower until thighs are parallel to the floor (or as deep as comfortable).",
+      "Drive through your heels and push the floor away to return to standing.",
+      "Squeeze glutes at the top."
+    ],
+    tips: [
+      "Keep elbows high throughout — this stops the weight pulling you forward.",
+      "Knees should track over your toes, not collapse inward.",
+      "Don't let your heels rise off the floor."
+    ]
+  },
+  {
+    name: "Stiff Leg Deadlift (Dumbbell)",
+    days: [1, 3],
+    sets: "3 sets · 10 reps",
+    muscles: ["Hamstrings", "Glutes", "Lower Back"],
+    steps: [
+      "Stand holding dumbbells in front of your thighs, palms facing your body.",
+      "Keep a slight bend in your knees throughout — do not lock them out.",
+      "Hinge at the hips, pushing them back as you lower the dumbbells down your legs.",
+      "Keep your back flat and chest up; the weights should travel close to your legs.",
+      "Lower until you feel a strong stretch in your hamstrings (roughly shin level for most people).",
+      "Squeeze your glutes and drive your hips forward to return to standing."
+    ],
+    tips: [
+      "This is a hip hinge — resist the urge to bend your knees into a squat.",
+      "Keep the dumbbells close to your body the whole way.",
+      "Stop lowering if your lower back starts to round."
+    ]
+  },
+  {
+    name: "One Arm Bent Over Row",
+    days: [1],
+    sets: "3 sets · 10 reps",
+    muscles: ["Lats", "Rhomboids", "Rear Delt", "Biceps"],
+    steps: [
+      "Place your left hand and left knee on a bench for support, body parallel to the floor.",
+      "Hold a dumbbell in your right hand, arm hanging straight down.",
+      "Pull the dumbbell up toward your hip, leading with your elbow.",
+      "Pause at the top — elbow should be above your back.",
+      "Lower slowly back to the starting position.",
+      "Complete all reps then switch sides."
+    ],
+    tips: [
+      "Keep your back flat — don't rotate your torso to heave the weight.",
+      "Think 'elbow to hip', not 'hand to shoulder'.",
+      "Lower the weight under control for full benefit."
+    ]
+  },
+  {
+    name: "Bench Press (Close Grip)",
+    days: [1, 3],
+    sets: "3 sets · 10 reps",
+    muscles: ["Triceps", "Chest", "Front Delt"],
+    steps: [
+      "Lie on a bench holding dumbbells (or barbell) with a shoulder-width or narrower grip.",
+      "Start with the weight directly above your chest, arms extended.",
+      "Lower the weight slowly to your lower chest, keeping elbows tucked close to your sides.",
+      "Press back up to the starting position, fully extending your arms.",
+      "Squeeze your triceps at the top."
+    ],
+    tips: [
+      "Tucking elbows is key — it shifts emphasis from chest to triceps.",
+      "Don't flare your elbows wide; this becomes a regular bench press.",
+      "Keep your feet flat on the floor and back slightly arched."
+    ]
+  },
+  {
+    name: "Lateral Raise (Dumbbell)",
+    days: [1],
+    sets: "3 sets · 10 reps",
+    muscles: ["Side Delts", "Traps"],
+    steps: [
+      "Stand holding a dumbbell in each hand by your sides, palms facing in.",
+      "With a slight bend in your elbows, raise both arms out to the sides.",
+      "Lift until your arms are roughly parallel to the floor (shoulder height).",
+      "Hold briefly at the top.",
+      "Lower slowly back to your sides — this is where the work happens."
+    ],
+    tips: [
+      "Lead with your elbows, not your wrists.",
+      "Avoid shrugging your traps — keep shoulders down.",
+      "Go lighter than you think; these fatigue quickly with bad form."
+    ]
+  },
+  {
+    name: "Bicep Curl (Dumbbell)",
+    days: [1],
+    sets: "3 sets · 10 reps",
+    muscles: ["Biceps", "Forearms"],
+    steps: [
+      "Stand holding a dumbbell in each hand, arms fully extended, palms facing forward.",
+      "Keep your upper arms pinned to your sides — they shouldn't move.",
+      "Curl both dumbbells up toward your shoulders.",
+      "Squeeze your biceps at the top.",
+      "Lower slowly back to the start, resisting the weight on the way down."
+    ],
+    tips: [
+      "Don't swing your body to help lift — keep your torso still.",
+      "Full range of motion: fully extend at the bottom.",
+      "You can alternate arms or curl both at once."
+    ]
+  },
+  {
+    name: "Tricep Extension (Dumbbell)",
+    days: [1],
+    sets: "3 sets · 10 reps",
+    muscles: ["Triceps"],
+    steps: [
+      "Stand or sit holding one dumbbell with both hands, cupped under the top plate.",
+      "Raise the dumbbell overhead until your arms are fully extended.",
+      "Keeping your upper arms still and close to your head, bend at the elbows to lower the weight behind your head.",
+      "Lower until you feel a stretch in your triceps.",
+      "Press back up to the starting position, fully extending your arms."
+    ],
+    tips: [
+      "Only your forearms should move — lock your upper arms in place.",
+      "Keep your core tight to avoid over-arching your lower back.",
+      "Move slowly and deliberately; it's easy to lose control."
+    ]
+  },
+  {
+    name: "Lunge (Dumbbell)",
+    days: [2],
+    sets: "3 sets · 10 reps",
+    muscles: ["Quads", "Glutes", "Hamstrings", "Core"],
+    steps: [
+      "Stand upright holding a dumbbell in each hand by your sides.",
+      "Step forward with one foot, landing heel-first.",
+      "Lower your back knee toward the floor, stopping just before it touches.",
+      "Both knees should be at roughly 90 degrees at the bottom.",
+      "Push through your front heel to return to standing.",
+      "Alternate legs for each rep, or complete all reps on one side then switch."
+    ],
+    tips: [
+      "Keep your torso upright — don't lean forward.",
+      "Front knee should stay over your ankle, not past your toes.",
+      "Take a big enough step so your front shin stays vertical."
+    ]
+  },
+  {
+    name: "Good Morning",
+    days: [2],
+    sets: "3 sets · 10 reps",
+    muscles: ["Hamstrings", "Glutes", "Lower Back", "Core"],
+    steps: [
+      "Stand with feet shoulder-width apart. Rest a barbell across your upper traps, or hold dumbbells at your sides / clasped behind your head.",
+      "Maintain a slight bend in your knees throughout.",
+      "Hinge at the hips, pushing them back as your torso lowers toward horizontal.",
+      "Keep your back flat and chest up.",
+      "Lower until you feel a strong hamstring stretch or your back starts to round (whichever comes first).",
+      "Drive your hips forward to return to upright, squeezing your glutes at the top."
+    ],
+    tips: [
+      "Think of it as a hip hinge, not a forward bend.",
+      "This is the same movement pattern as the Romanian deadlift.",
+      "Start light — the lower back is under significant load."
+    ]
+  },
+  {
+    name: "Deadlift (Dumbbell)",
+    days: [2],
+    sets: "3 sets · 10 reps",
+    muscles: ["Hamstrings", "Glutes", "Lower Back", "Traps", "Core"],
+    steps: [
+      "Stand with feet hip-width apart, a dumbbell on either side of your feet.",
+      "Hinge at the hips and bend your knees to reach down and grip the dumbbells.",
+      "Flat back, chest up, hips higher than knees, shoulders over the weights.",
+      "Take a breath in, brace your core, then drive through your heels.",
+      "Push the floor away and extend your hips and knees simultaneously.",
+      "Stand tall at the top — hips forward, shoulders back.",
+      "Lower the dumbbells with control by hinging at the hips first, then bending the knees."
+    ],
+    tips: [
+      "Keep the dumbbells close to your legs throughout the lift.",
+      "Don't jerk the weight — build tension before you pull.",
+      "Exhale at the top once you've fully locked out."
+    ]
+  },
+  {
+    name: "Military Press (Dumbbell)",
+    days: [2],
+    sets: "3 sets · 10 reps",
+    muscles: ["Front Delt", "Side Delt", "Triceps", "Traps"],
+    steps: [
+      "Stand (or sit) holding dumbbells at shoulder height, palms facing forward, elbows below your wrists.",
+      "Brace your core and avoid over-arching your lower back.",
+      "Press the dumbbells straight overhead until your arms are fully extended.",
+      "At the top your biceps should be roughly in line with your ears.",
+      "Lower the dumbbells back to shoulder height under control."
+    ],
+    tips: [
+      "Don't lean back excessively — engage your core throughout.",
+      "Press in a slight arc, bringing the weights together slightly overhead.",
+      "Keep wrists stacked over elbows at the start of each rep."
+    ]
+  },
+  {
+    name: "Pec Fly (Dumbbell)",
+    days: [2],
+    sets: "3 sets · 10 reps",
+    muscles: ["Chest", "Front Delt"],
+    steps: [
+      "Lie flat on a bench holding a dumbbell in each hand above your chest, palms facing each other.",
+      "Maintain a slight, fixed bend in your elbows throughout (like hugging a barrel).",
+      "Lower your arms out to the sides in a wide arc until you feel a stretch across your chest.",
+      "Bring your arms back together above your chest using a squeezing motion.",
+      "Don't let the dumbbells touch at the top — keep tension on the chest."
+    ],
+    tips: [
+      "The elbow angle should not change — it's not a press.",
+      "Lower slowly to maximise the stretch.",
+      "If your shoulders feel uncomfortable, reduce the range of motion."
+    ]
+  },
+  {
+    name: "Hammer Curl",
+    days: [2],
+    sets: "3 sets · 10 reps",
+    muscles: ["Biceps", "Brachialis", "Forearms"],
+    steps: [
+      "Stand holding a dumbbell in each hand with a neutral grip — palms facing each other.",
+      "Keep your upper arms pinned to your sides.",
+      "Curl both dumbbells up toward your shoulders, maintaining the neutral grip.",
+      "Squeeze at the top.",
+      "Lower slowly back to the start."
+    ],
+    tips: [
+      "The neutral grip targets the brachialis (outer upper arm) more than a standard curl.",
+      "Can be done alternating or both arms at once.",
+      "Keep your wrists straight — don't flex them to assist the movement."
+    ]
+  },
+  {
+    name: "Overhead Extension (Dumbbell)",
+    days: [2],
+    sets: "3 sets · 10 reps",
+    muscles: ["Triceps"],
+    steps: [
+      "Stand or sit holding one dumbbell with both hands, gripping under the top plate.",
+      "Press the dumbbell overhead until your arms are fully extended.",
+      "Keeping upper arms close to your head, lower the dumbbell behind your head by bending at the elbows.",
+      "Lower until you feel a deep stretch in your triceps.",
+      "Press back up to the starting position."
+    ],
+    tips: [
+      "Same as the Tricep Extension — upper arms stay fixed.",
+      "Go through the full range of motion for best results.",
+      "Can also be done with two dumbbells, one in each hand."
+    ]
+  },
+  {
+    name: "Hip Thrust (Dumbbell)",
+    days: [3],
+    sets: "3 sets · 10 reps",
+    muscles: ["Glutes", "Hamstrings", "Core"],
+    steps: [
+      "Sit on the floor with your upper back against a bench, knees bent, feet flat on the floor.",
+      "Place a dumbbell across your hips (hold it in place with both hands).",
+      "Drive through your heels to push your hips up toward the ceiling.",
+      "At the top your body should form a straight line from shoulders to knees.",
+      "Squeeze your glutes hard at the top for a moment.",
+      "Lower your hips back down with control and repeat."
+    ],
+    tips: [
+      "Feet should be roughly hip-width apart — experiment with position.",
+      "Don't hyperextend your lower back at the top; think about driving your hips forward not your chest up.",
+      "Keep your chin tucked to avoid straining your neck."
+    ]
+  },
+  {
+    name: "Dumbbell Row",
+    days: [3],
+    sets: "3 sets · 10 reps",
+    muscles: ["Lats", "Rhomboids", "Rear Delt", "Biceps"],
+    steps: [
+      "Hold a dumbbell in each hand and hinge at the hips until your torso is roughly parallel to the floor.",
+      "Let the dumbbells hang straight down from your shoulders.",
+      "Pull both dumbbells up toward your hips, driving your elbows back.",
+      "Pause at the top, squeezing your shoulder blades together.",
+      "Lower the weights slowly back to the start."
+    ],
+    tips: [
+      "Keep your back flat throughout — don't round your spine.",
+      "Think 'elbows to hips' to engage the lats properly.",
+      "You can also do this one arm at a time for more range of motion."
+    ]
+  },
+  {
+    name: "Neutral Grip Dumbbell Bench Press",
+    days: [3],
+    sets: "3 sets · 10 reps",
+    muscles: ["Chest", "Triceps", "Front Delt"],
+    steps: [
+      "Lie flat on a bench holding a dumbbell in each hand, palms facing each other (neutral grip).",
+      "Start with the dumbbells above your chest, arms extended.",
+      "Lower the dumbbells toward the sides of your chest, keeping elbows at roughly 45 degrees to your body.",
+      "Press back up to the starting position.",
+      "Keep the neutral grip (palms facing in) throughout the entire movement."
+    ],
+    tips: [
+      "Neutral grip is easier on the shoulder joint than a standard bench press.",
+      "Elbows should not flare straight out to the sides — keep them angled in.",
+      "The dumbbells will naturally drift slightly closer at the top."
+    ]
+  },
+  {
+    name: "Rear Delt Fly (Dumbbell)",
+    days: [3],
+    sets: "3 sets · 10 reps",
+    muscles: ["Rear Delt", "Rhomboids", "Traps"],
+    steps: [
+      "Sit at the end of a bench and hinge forward until your chest is near your thighs, or stand bent over.",
+      "Hold a dumbbell in each hand hanging below you, palms facing each other.",
+      "With a slight bend in the elbows, raise both arms out to the sides in a wide arc.",
+      "Lift until your arms are roughly parallel to the floor.",
+      "Lower slowly back to the start."
+    ],
+    tips: [
+      "This is a small, controlled movement — don't use momentum.",
+      "Focus on squeezing the back of your shoulders, not just lifting.",
+      "Very light weight is usually all that's needed."
+    ]
+  },
+  {
+    name: "Zottman Curl",
+    days: [3],
+    sets: "3 sets · 10 reps",
+    muscles: ["Biceps", "Brachialis", "Forearms"],
+    steps: [
+      "Stand holding dumbbells at your sides with palms facing forward (supinated).",
+      "Curl the dumbbells up toward your shoulders as in a standard bicep curl.",
+      "At the top, rotate your wrists so your palms now face down (pronated).",
+      "Lower the dumbbells slowly back to the start in this pronated position.",
+      "At the bottom, rotate your wrists back to palms facing forward to begin the next rep."
+    ],
+    tips: [
+      "The lowering phase with palms down is what makes this unique — don't rush it.",
+      "The rotation works the forearm extensors and hits the brachialis harder.",
+      "Use a lighter weight than a standard curl due to the extra demand."
+    ]
+  }
+];
+
+let activeDay = "all";
+let query = "";
+
+function render() {
+  const list = document.getElementById("list");
+  const q = query.toLowerCase().trim();
+
+  const filtered = exercises.filter(e => {
+    const dayMatch = activeDay === "all" || e.days.includes(Number(activeDay));
+    const nameMatch = e.name.toLowerCase().includes(q) || e.muscles.some(m => m.toLowerCase().includes(q));
+    return dayMatch && nameMatch;
+  });
+
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="no-results">No exercises found</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map((e, i) => `
+    <div class="exercise-card" id="card-${i}" onclick="toggle(${i})">
+      <div class="card-header">
+        <div class="card-left">
+          <div class="card-name">${e.name}</div>
+          <div class="card-meta">${e.sets}</div>
+          <div class="card-days">
+            ${e.days.map(d => `<span class="day-tag">Day ${d}</span>`).join('')}
+          </div>
+        </div>
+        <span class="chevron">&#8964;</span>
+      </div>
+      <div class="card-body">
+        <div class="section-label">How to do it</div>
+        <div class="steps"><ol>${e.steps.map(s => `<li>${s}</li>`).join('')}</ol></div>
+        <div class="section-label">Muscles</div>
+        <div class="muscles">${e.muscles.map(m => `<span class="muscle-tag">${m}</span>`).join('')}</div>
+        <div class="section-label">Form tips</div>
+        <div class="tips"><ul>${e.tips.map(t => `<li>${t}</li>`).join('')}</ul></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggle(i) {
+  const card = document.getElementById(`card-${i}`);
+  card.classList.toggle('open');
+}
+
+document.querySelectorAll('.day-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeDay = btn.dataset.day;
+    render();
+  });
+});
+
+document.getElementById('search').addEventListener('input', e => {
+  query = e.target.value;
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
