@@ -262,7 +262,7 @@ const exercises = [
     name: "Stiff Leg Deadlift (Dumbbell)",
     days: [1, 3],
     sets: "3 sets · 10 reps",
-    images: ["Stiff-Legged_Dumbbell_Deadlift/0.jpg", "Stiff-Legged_Dumbbell_Deadlift/1.jpg"],
+    images: ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCm1o2y0cMaCitW0yjpjhVw3NYRPuWe-X17ds2i65zh0E8GtYsL-usSa_I&s=10"],
     muscles: ["Hamstrings", "Glutes", "Lower Back"],
     steps: [
       "Stand holding dumbbells in front of your thighs, palms facing your body.",
@@ -614,9 +614,9 @@ let query = "";
 
 function imgHtml(images) {
   if (!images || images.length === 0) return '';
-  // Show first image by default; tap to toggle to second
-  const src0 = BASE + images[0];
-  const src1 = images[1] ? BASE + images[1] : null;
+  const toSrc = u => u.startsWith('http') ? u : BASE + u;
+  const src0 = toSrc(images[0]);
+  const src1 = images[1] ? toSrc(images[1]) : null;
   return `
     <div class="exercise-image-wrap" id="imgwrap-CARDID">
       <img
